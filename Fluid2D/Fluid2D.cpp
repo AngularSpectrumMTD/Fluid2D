@@ -14,8 +14,6 @@
 
 using namespace DirectX;
 
-//This Program is only support TRIANGULAR POLYGON
-//If u see beautiful caustics, polygon normal must be smooth!!!
 Fluid2D::Fluid2D(u32 width, u32 height) : AppBase(width, height, L"Fluid2D")
 {
    WCHAR assetsPath[512];
