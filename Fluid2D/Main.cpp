@@ -9,6 +9,6 @@ int APIENTRY wWinMain(
     _In_ LPWSTR /*cmdline*/,
     _In_ int /*nCmdShow*/)
 {
-    Fluid2D photonMapper(1280, 720);
-    return AppInvoker::Execute(&photonMapper, hInstance);
+    Fluid2D fluid2D(1280, 720);
+    return AppInvoker::Execute(&fluid2D, hInstance);
 }

@@ -66,7 +66,7 @@ private:
         FluidTerm_Divergence
     };
 
-    void FixedDispatch();
+    void FixedDispatch(const std::wstring cmdName);
 
     void CreateComputeRootSignatureAndPSO();
     void CreateComputeShaderStateObject(const LPCWSTR& compiledComputeShaderName, ComPtr<ID3D12PipelineState>& computePipelineState, ComPtr<ID3D12RootSignature> rootSig);

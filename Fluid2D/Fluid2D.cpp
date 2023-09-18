@@ -21,9 +21,11 @@ Fluid2D::Fluid2D(u32 width, u32 height) : AppBase(width, height, L"Fluid2D")
    mAssetPath = assetsPath;
 }
 
-void Fluid2D::FixedDispatch()
+void Fluid2D::FixedDispatch(const std::wstring cmdName)
 {
+    PIXBeginEvent(mCommandList.Get(), 0, cmdName.c_str());
     mCommandList->Dispatch(GetWidth() / 8, GetHeight() / 8, 1);
+    PIXEndEvent(mCommandList.Get());
 }
 
 void valueSwap(u32& a, u32& b)
@@ -216,34 +218,34 @@ void Fluid2D::Draw()
         mCommandList->SetComputeRootDescriptorTable(1, mBaseTex.srv.hGpu);
         mCommandList->SetComputeRootDescriptorTable(2, mResultUAVTbl[0].hGpu);
         mCommandList->SetPipelineState(mSetTexturePSO.Get());
-        FixedDispatch();
+        FixedDispatch(L"SetTexture");
 
         mCommandList->SetComputeRootSignature(mRsSetTexture.Get());
         mCommandList->SetComputeRootConstantBufferView(0, mSceneCB.Get()->GetGPUVirtualAddress());
         mCommandList->SetComputeRootDescriptorTable(1, mBaseTex.srv.hGpu);
         mCommandList->SetComputeRootDescriptorTable(2, mResultUAVTbl[1].hGpu);
         mCommandList->SetPipelineState(mSetTexturePSO.Get());
-        FixedDispatch();
+        FixedDispatch(L"SetTexture");
 
         mCommandList->SetComputeRootSignature(mRsClearFloat2.Get());
         mCommandList->SetComputeRootDescriptorTable(0, mVelocityUAVTbl[0].hGpu);
         mCommandList->SetPipelineState(mClearFloat2PSO.Get());
-        FixedDispatch();
+        FixedDispatch(L"ClearFloat2");
 
         mCommandList->SetComputeRootSignature(mRsClearFloat2.Get());
         mCommandList->SetComputeRootDescriptorTable(0, mVelocityUAVTbl[1].hGpu);
         mCommandList->SetPipelineState(mClearFloat2PSO.Get());
-        FixedDispatch();
+        FixedDispatch(L"ClearFloat2");
 
         mCommandList->SetComputeRootSignature(mRsClearFloat.Get());
         mCommandList->SetComputeRootDescriptorTable(0, mPressureUAVTbl[0].hGpu);
         mCommandList->SetPipelineState(mClearFloatPSO.Get());
-        FixedDispatch();
+        FixedDispatch(L"ClearFloat");
 
         mCommandList->SetComputeRootSignature(mRsClearFloat.Get());
         mCommandList->SetComputeRootDescriptorTable(0, mPressureUAVTbl[1].hGpu);
         mCommandList->SetPipelineState(mClearFloatPSO.Get());
-        FixedDispatch();
+        FixedDispatch(L"ClearFloat");
 
         isTextureReset = false;
         mSceneParam.deltaTime = 0;
@@ -258,7 +260,7 @@ void Fluid2D::Draw()
           mCommandList->SetComputeRootDescriptorTable(1, mVelocitySRVTbl[ping].hGpu);
           mCommandList->SetComputeRootDescriptorTable(2, mVelocityUAVTbl[pong].hGpu);
           mCommandList->SetPipelineState(mUpdateAdvectionPSO.Get());
-          FixedDispatch();
+          FixedDispatch(L"UpdateAdvection");
 
           UpdateState(D3D12_RESOURCE_STATE_COPY_SOURCE, FluidTerm_Velocity, pong);
           UpdateState(D3D12_RESOURCE_STATE_UNORDERED_ACCESS, FluidTerm_Velocity, ping);
@@ -268,7 +270,7 @@ void Fluid2D::Draw()
           mCommandList->SetComputeRootDescriptorTable(1, mVelocitySRVTbl[pong].hGpu);
           mCommandList->SetComputeRootDescriptorTable(2, mVelocityUAVTbl[ping].hGpu);
           mCommandList->SetPipelineState(mApplyExternalForcePSO.Get());
-          FixedDispatch();
+          FixedDispatch(L"ApplyExternalForce");
 
           UpdateState(D3D12_RESOURCE_STATE_COPY_SOURCE, FluidTerm_Velocity, ping);
           UpdateState(D3D12_RESOURCE_STATE_UNORDERED_ACCESS, FluidTerm_Divergence);
@@ -278,7 +280,7 @@ void Fluid2D::Draw()
           mCommandList->SetComputeRootDescriptorTable(1, mVelocitySRVTbl[ping].hGpu);
           mCommandList->SetComputeRootDescriptorTable(2, mDivergenceUAV.hGpu);
           mCommandList->SetPipelineState(mGenerateDivergencePSO.Get());
-          FixedDispatch();
+          FixedDispatch(L"GenerateDivergence");
 
           //poisson
           for (u32 i = 0; i < POISSON_LOOP; i++)
@@ -293,7 +295,7 @@ void Fluid2D::Draw()
               mCommandList->SetComputeRootDescriptorTable(2, mDivergenceSRV.hGpu);
               mCommandList->SetComputeRootDescriptorTable(3, mPressureUAVTbl[pong].hGpu);
               mCommandList->SetPipelineState(mUpdatePressurePSO.Get());
-              FixedDispatch();
+              FixedDispatch(L"UpdatePressure");
 
               valueSwap(ping, pong);
           }
@@ -308,7 +310,7 @@ void Fluid2D::Draw()
           mCommandList->SetComputeRootDescriptorTable(2, mVelocitySRVTbl[ping].hGpu);
           mCommandList->SetComputeRootDescriptorTable(3, mVelocityUAVTbl[pong].hGpu);
           mCommandList->SetPipelineState(mUpdateVelocityPSO.Get());
-          FixedDispatch();
+          FixedDispatch(L"UpdateVelocity");
 
           UpdateState(D3D12_RESOURCE_STATE_COPY_SOURCE, FluidTerm_Result, ping);
           UpdateState(D3D12_RESOURCE_STATE_UNORDERED_ACCESS, FluidTerm_Result, pong);
@@ -320,7 +322,7 @@ void Fluid2D::Draw()
           mCommandList->SetComputeRootDescriptorTable(2, mVelocitySRVTbl[pong].hGpu);
           mCommandList->SetComputeRootDescriptorTable(3, mResultUAVTbl[pong].hGpu);
           mCommandList->SetPipelineState(mUpdateResultPSO.Get());
-          FixedDispatch();
+          FixedDispatch(L"UpdateResult");
     }
     
     UpdateState(D3D12_RESOURCE_STATE_COPY_SOURCE, FluidTerm_Result, pong);
