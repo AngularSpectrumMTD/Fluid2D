@@ -6,7 +6,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#define POISSON_LOOP 40
+#define POISSON_LOOP 30
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
